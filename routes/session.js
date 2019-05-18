@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jwt-simple');
-//const authHelper = require('./authHelper');
+const authHelper = require('./authHelper');
 
 const router = express.Router();
 
@@ -47,3 +47,13 @@ router.post('/', (req, res, next) => {
 });
 
 // Delete the token as a user logs out
+router,delete('/:id', authHelper.checkAuth, (req, res, next) => {
+    if (req.params.id != req.auth.userId) {
+        return next(new Error('Invalid request for logout'));
+    }
+    res.status(200).json({
+        msg: 'Logged out'
+    });
+});
+
+module.exports = router;
