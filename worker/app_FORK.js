@@ -110,3 +110,32 @@ function refreshStories(doc, callback) {
             return callback(err);
     });
 }
+
+staleStoryDeleteBackgroundTimer = setInterval(function () {
+    db.collection.find({ type: 'SHAREDSTORY_TYPE' }).toArray(function (err, docs) {
+        if (err) {
+            console.log('Fork could not get shared stories. err:', err);
+            return;
+        }
+        async.eachSeries(docs, function (story, innercallback) {
+            // Go off the date of the time the story was shared
+            var d1 = story.comments[0].dateTime;
+            var d2 = Date.now();
+            var diff = Math.floor((d2 - d1) / 3600000);
+            if (diff > 72) {
+                db.collection.findOneAndDelete({ type: 'SHAREDSTORY_TYPE',
+                _id: story._id }, function (err, result) {
+                    innercallback(err);
+                });
+            } else {
+                innercallback();
+            }
+        }, function (err) {
+            if (err) {
+                console.log('stale story deletion failure');
+            } else {
+                console.log('stale story deletion success');
+            }
+        });
+    });
+}, 24 * 60 * 60 * 1000);
