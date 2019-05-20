@@ -15,6 +15,7 @@ router.get('/', authHelper.checkAuth, function (req, res, next) {
     });
 });
 
+// Create a new shared story
 router.post('/', authHelper.checkAuth, (req, res, next) => {
     // make sure we arent at the count limit
     req.db.collection.count({type: 'SHAREDSTORY_TYPE'}, (err, count) => {
@@ -54,6 +55,29 @@ router.delete('/:sid'. authHelper.checkAuth, (req, res, next) => {
             return next(new Error('Shared story deletion failure'));
         }
         res.status(200).json({ msg: "Shared story deleted!"});
+    });
+});
+
+// Create a new comment
+router.post('/:sid/Comments', authHelper.checkAuth, (req, res, next) => {
+    let xferComment = {
+        displayName: req.auth.displayName,
+        userId: req.auth.userId,
+        dateTime: Date.now(),
+        comment: req.body.comment.substring(0,250)
+    };
+    req.db.collection.findOneAndUpdate({type: 'SHAREDSTORY_TYPE', _id: req.params.sid}, {$push: {comments: xferComment}}, (err, result) => {
+        if (result && result.value == null) {
+            return next(new Error('Comment level reached'));
+        } else if (err) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ err:", err);
+            return next(err);
+        } else if (result.ok != 1) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ result:", result);
+            return next(new Error('Comment save failure'));
+        }
+
+        res.status(201).json({ msg: "Comment added"});
     });
 });
 
