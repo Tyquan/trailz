@@ -7,7 +7,7 @@ const router = express.Router();
 
 //Creating a new User
 router.post('/', (req, res, next) => {
-    req.body.collection.findOne({type: 'USER_TYPE'}, (err, doc) => {
+    req.db.collection.findOne({type: 'USER_TYPE'}, (err, doc) => {
         if (err)
             return next(err);
         if(doc)
@@ -144,7 +144,7 @@ router.post('/:id/savedstories', authHelper.checkAuth, (req, res, next) => {
 router.delete('/:id/savedstories/:sid', authHelper.checkAuth, (req, res, next) => {
     if (req.params.id != req.auth.userId)
         return next(new Error('Invalid request for saved story deletion'));
-    req.body.collection.findOneAndUpdate({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, {$pull: {savedStories: {storyID: req.params.sid}}}, {returnOriginal: true}, (err, result) => {
+    req.db.collection.findOneAndUpdate({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, {$pull: {savedStories: {storyID: req.params.sid}}}, {returnOriginal: true}, (err, result) => {
         if (err) {
             console.log("+++POSSIBLE CONTENTION ERROR?+++ err:", err);
             return next(err);
