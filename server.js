@@ -22,10 +22,10 @@ MongoClient.connect(process.env.MONGDB_CONNECT_URL, (err, client) => {
 	db.collection = client.db('trailzdb').collection('trailz');
 });
 
-// const users = require('./routes/users');
+const users = require('./routes/users');
 const session = require('./routes/session');
-// const sharedPosts = require('./routes/sharedPosts');
-// const homePosts = require('./routes/homePosts');
+const sharedPosts = require('./routes/sharedPosts');
+const homePosts = require('./routes/homePosts');
 
 const app = express();
 
@@ -66,10 +66,10 @@ app.use((req, res, next) => {
 	next();
 });
 
-// app.use('/api/users', users);
-// app.use('/api/sessions', sessions);
-// app.use('/api/sharedPosts', sharedPosts);
-// app.use('/api/homePosts', homePosts);
+app.use('/api/users', users);
+app.use('/api/sessions', sessions);
+app.use('/api/sharedPosts', sharedPosts);
+app.use('/api/homePosts', homePosts);
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'build', 'index.html'));

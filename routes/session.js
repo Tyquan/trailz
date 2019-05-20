@@ -6,10 +6,6 @@ const authHelper = require('./authHelper');
 const router = express.Router();
 
 router.post('/', (req, res, next) => {
-    let schema = {
-        email: req.body.email,
-        password: req.body.email
-    };
     req.db.collection.findOne({
         type: 'USER_TYPE',
         email: req.body.email
