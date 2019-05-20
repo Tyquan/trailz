@@ -41,6 +41,20 @@ router.post('/', authHelper.checkAuth, (req, res, next) => {
             res.status(201).json(result.ops[0]);
         });
     });
-});    
+});
+
+// Delete individual shared stories
+router.delete('/:sid'. authHelper.checkAuth, (req, res, next) => {
+    req.db.collection.findOneAndDelete({type: 'SHAREDSTORY_TYPE', _id: req.params.sid}, (err, result) => {
+        if (err) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ err:", err);
+            return next(err);
+        } else if (result.ok != 1) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ result:", result);
+            return next(new Error('Shared story deletion failure'));
+        }
+        res.status(200).json({ msg: "Shared story deleted!"});
+    });
+});
 
 module.exports = router;
