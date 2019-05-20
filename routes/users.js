@@ -119,4 +119,25 @@ router.put('/:id', authHelper.checkAuth, (req, res, next) => {
     });
 });
 
+// Creating saved stories
+router.post('/:id/savedstories', authHelper.checkAuth, (req, res, next) => {
+    if (req.params.id != req.auth.userId)
+        return next(new Error('Invalid request for account deletion'));
+    // make sure:
+    // A. Story is not already in there.
+    // B. We limit the number of saved stories to 3
+    req.db.collection.findOneAndUpdate({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, {$addToSet: {savedStories: req.body}}, {returnOriginal: true}, (err, result) => {
+        if (result && result.value == null) {
+            return next(new Error('Over the save limit, or story already saved.'));
+        } else if (err) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ err:", err);
+            return next(err);
+        } else if (result.ok != 1) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ result:", result);
+            return next(new Error('Story save failure'));
+        }
+        res.status(200).json(result.value);
+    });
+});
+
 module.exports = router;
