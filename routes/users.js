@@ -90,4 +90,33 @@ router.get('/:id', authHelper.checkAuth, (req, res, next) => {
     }); 
 });
 
+// Update a User
+router.put('/:id', authHelper.checkAuth, (req, res, next) => {
+    if (req.params.id != req.auth.userId)
+        return next(new Error('Invalid request for account deletion'));
+    // limit the postFilters
+    if (req.body.postFilters.length > process.env.MAX_FILTERS)
+        return next(new Error('Too many postFilters'));
+    // clear out leading and trailing spaces
+    for (let i = 0; i < req.body.postFilters.length; i++) {
+        if ("keywords" in req.body.postFilters[i] && req.body.postFilters[i].keyWords[0] != "") {
+            for (let j = 0; j < req.body.postFilters[i].keyWords.length; j++) {
+                req.body.postFilters[i].keyWords[j] = req.body.postFilters[i].keyWords[j].trim();
+            }
+        }
+    }
+
+    req.db.collection.findOneAndUpdate({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, {$set: {settings: {requireWIFI: req.body.requireWIFI, enableAlerts: req.body.enableAlerts}, postFilters: req.body.postFilters}}, {returnOriginal: false}, (err, result) => {
+        if (err) {
+            console.log("+++POSSIBLE USER PUT CONTENTION ERROR?+++ err:", err);
+            return next(err);
+        } else if(result.ok != 1) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ result:", result);
+            return next(new Error('User PUT failure'));
+        }
+        req.node2.send({msg: 'REFRESH_STORIES', doc: result.value});
+        res.status(200).json(result.value);
+    });
+});
+
 module.exports = router;
