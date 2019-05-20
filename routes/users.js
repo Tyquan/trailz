@@ -51,6 +51,7 @@ router.post('/', (req, res, next) => {
     });
 });
 
+// Delete a User
 router.delete('/:id', authHelper.checkAuth, (req, res, next) => {
     if (req.params.id != req.auth.userId)
         return next(new Error('Invalid request for account deletion'));
@@ -64,6 +65,29 @@ router.delete('/:id', authHelper.checkAuth, (req, res, next) => {
         }
         res.status(200).json({ msg: 'User Deleted'});
     });
+});
+
+// Retrieve a single User
+router.get('/:id', authHelper.checkAuth, (req, res, next) => {
+    // Verify the passed in id to delete is the same as  the auth token
+    if (req.params.id != req.auth.userId)
+        return next(new Error('Invalid request for account fetch'));
+    req.db.collection.findOne({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, (err, doc) => {
+        if (err)
+            return next(err);
+        let xferProfile = {
+            email: doc.email,
+            displayName: doc.displayName,
+            date: doc.date,
+            settings: doc.settings,
+            postFilters: doc.postFilters,
+            savedStories: doc.savedStories
+        };
+        res.header("Cache-Control", "no-cache, no-store, must-revaidate");
+        res.header("Pragma", "no-cache");
+        res.header("Expires", 0);
+        res.status(200).json(xferProfile);
+    }); 
 });
 
 module.exports = router;
