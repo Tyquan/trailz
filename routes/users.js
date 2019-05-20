@@ -140,4 +140,20 @@ router.post('/:id/savedstories', authHelper.checkAuth, (req, res, next) => {
     });
 });
 
+// Delete a story
+router.delete('/:id/savedstories/:sid', authHelper.checkAuth, (req, res, next) => {
+    if (req.params.id != req.auth.userId)
+        return next(new Error('Invalid request for saved story deletion'));
+    req.body.collection.findOneAndUpdate({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, {$pull: {savedStories: {storyID: req.params.sid}}}, {returnOriginal: true}, (err, result) => {
+        if (err) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ err:", err);
+            return next(err);
+        } else if (result.ok != 1) {
+            console.log("+++POSSIBLE CONTENTION ERROR?+++ result:", result);
+            return next(new Error('Story delete failure'));
+        }
+        res.status(200).json(result.value);
+    });
+});
+
 module.exports = router;
