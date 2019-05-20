@@ -51,4 +51,19 @@ router.post('/', (req, res, next) => {
     });
 });
 
+router.delete('/:id', authHelper.checkAuth, (req, res, next) => {
+    if (req.params.id != req.auth.userId)
+        return next(new Error('Invalid request for account deletion'));
+    req.db.collection.findOneAndDelete({type: 'USER_TYPE', _id: ObjectId(req.auth.userId)}, (err, result) => {
+        if (err) {
+            console.log(`POSSIBLE USER DELETION CONTENTION? err: ${err}`);
+            return next(err);
+        } else if(result.ok != 1) {
+            console.log(`POSSIBLE UER DELETION ERROR? result: ${result}`);
+            return next(new Error('Account deletiob failure'));
+        }
+        res.status(200).json({ msg: 'User Deleted'});
+    });
+});
+
 module.exports = router;
