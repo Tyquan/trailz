@@ -5,11 +5,14 @@ const assert = require('assert');
 const ObjectId = require('mongodb').ObjectID;
 const MongoClient = require('mongodb').MongoClient;
 
-const globalPostDoc;
+let globalPostDoc;
 const POSTS_CATEGORIES = ["home", "world", "national", "business", "technology", "media", "entertainment", "sports"];
 
 const db = {};
-MongoClient.connect(process.envMONGODB_CONNECT_URL, (err, client) => {
+const mongodbUri = "mongodb://Tyquan:Jamela17!@ds135926.mlab.com:35926/mocky";
+const processMongodbUri = process.env.MONGDB_CONNECT_URL;
+
+MongoClient.connect(mongodbUri, (err, client) => {
     assert.equal(null, err);
     db.client = client;
     db.collection = client.db('trailzdb').collection('trailz');

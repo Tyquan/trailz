@@ -45,7 +45,7 @@ router.post('/', authHelper.checkAuth, (req, res, next) => {
 });
 
 // Delete individual shared stories
-router.delete('/:sid'. authHelper.checkAuth, (req, res, next) => {
+router.delete('/:sid', authHelper.checkAuth, (req, res, next) => {
     req.db.collection.findOneAndDelete({type: 'SHAREDSTORY_TYPE', _id: req.params.sid}, (err, result) => {
         if (err) {
             console.log("+++POSSIBLE CONTENTION ERROR?+++ err:", err);

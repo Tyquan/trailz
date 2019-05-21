@@ -15,15 +15,17 @@ if(process.env.NODE_ENV !== 'production'){
 
 const db = {};
 const MongoClient = require('mongodb').MongoClient;
+const mongodbUri = "mongodb://Tyquan:Jamela17!@ds135926.mlab.com:35926/mocky";
+const processMongodbUri = process.env.MONGDB_CONNECT_URL;
 
-MongoClient.connect(process.env.MONGDB_CONNECT_URL, (err, client) => {
+MongoClient.connect(mongodbUri, (err, client) => {
 	assert.equal(null, err);
 	db.client = client;
 	db.collection = client.db('trailzdb').collection('trailz');
 });
 
 const users = require('./routes/users');
-const session = require('./routes/session');
+const sessions = require('./routes/session');
 const sharedPosts = require('./routes/sharedPosts');
 const homePosts = require('./routes/homePosts');
 
@@ -42,10 +44,10 @@ app.use(limiter);
 app.use(helmet());
 app.use(csp({
 	directives: {
-		defaultSrc: ["self"],
-		scriptSrc: ["self", "unsafe-inline", 'ajax.googleapis.com', 'maxcdn.bootstrap.com'],
-		styleSrc: ["self", "unsafe-inline", 'maxcdn.bootstrap.com'],
-		fontSrc: ["self", 'maxcdn.bootstrap.com'],
+		defaultSrc: ["'self'"],
+		scriptSrc: ["'self'", "'unsafe-inline'", 'ajax.googleapis.com', 'maxcdn.bootstrap.com'],
+		styleSrc: ["'self'", "'unsafe-inline'", 'maxcdn.bootstrap.com'],
+		fontSrc: ["'self'", 'maxcdn.bootstrap.com'],
 		imgSrc: ['*']
 	}
 }));
@@ -99,10 +101,10 @@ app.use((err, req, res, next) => {
 	console.log(err);
 });
 
-app.set('port', process.env.PORT || 3000);
+//app.set('port', process.env.PORT || 3000);
 
-const server = app.listen(app.get('port'), () => {
-	console.log(`Server listening on ${server.address.port}`);
+const server = app.listen(5000, () => {
+	console.log(`Server listening on ${5000}`);
 });
 
 server.db = db;

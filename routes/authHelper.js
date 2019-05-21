@@ -1,6 +1,6 @@
 const jwt = require('jwt-simple');
 
-module.expoorts.checkAuth = (req, res, next) => {
+module.exports.checkAuth = (req, res, next) => {
     if (req.headers['x-auth']) {
         try {
             req.auth = jwt.decode(req.headers['x-auth'], process.env.JWT_SECRET);
