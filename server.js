@@ -74,7 +74,7 @@ app.use('/api/sharedPosts', sharedPosts);
 app.use('/api/homePosts', homePosts);
 
 app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'build', 'index.html'));
+	res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.use((req, res, next) => {

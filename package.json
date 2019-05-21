@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js",
+    "start-react": "react-scripts start",
+    "build-eact": "react-scripts build",
+    "test-react": "react-scripts test",
+    "eject-react": "react-scripts eject"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +26,9 @@
     "jwt-simple": "^0.5.6",
     "mongodb": "^3.2.5",
     "morgan": "^1.9.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "3.0.1",
     "response-time": "^2.3.2"
   },
   "devDependencies": {
@@ -30,5 +37,20 @@
     "nodemon": "^1.19.0",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "supertest": "^4.0.2"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
